@@ -1,0 +1,41 @@
+<resources>
+    <string name="app_name">AudioCity</string>
+
+    <!-- Google Maps API Key - Replace with your actual key -->
+    <string name="google_maps_api_key">AIzaSyCbVzD0lqiMMsZVvv6hM0WyI4kpHJpUrWg</string>
+
+    <!-- Tab names -->
+    <string name="tab_explore">Explorar</string>
+    <string name="tab_routes">Rutas</string>
+    <string name="tab_profile">Perfil</string>
+
+    <!-- General -->
+    <string name="loading">Cargando...</string>
+    <string name="error">Error</string>
+    <string name="retry">Reintentar</string>
+    <string name="cancel">Cancelar</string>
+    <string name="ok">OK</string>
+
+    <!-- Routes -->
+    <string name="start_route">Iniciar Ruta</string>
+    <string name="end_route">Finalizar Ruta</string>
+    <string name="stops">paradas</string>
+    <string name="minutes">min</string>
+    <string name="km">km</string>
+
+    <!-- Audio -->
+    <string name="playing">Reproduciendo</string>
+    <string name="paused">Pausado</string>
+
+    <!-- Permissions -->
+    <string name="location_permission_title">Permiso de ubicación</string>
+    <string name="location_permission_rationale">AudioCity necesita acceso a tu ubicación para detectar cuando llegas a los puntos de interés y reproducir las audioguías automáticamente.</string>
+    <string name="background_location_rationale">Para que la app funcione cuando está en segundo plano, necesitamos el permiso de ubicación \"Permitir siempre\".</string>
+    <string name="grant_permission">Conceder permiso</string>
+
+    <!-- Notifications -->
+    <string name="notification_channel_name">Ruta Activa</string>
+    <string name="notification_channel_description">Notificaciones mientras una ruta está activa</string>
+    <string name="notification_title">AudioCity - Ruta activa</string>
+    <string name="notification_text">Explorando: %1$s</string>
+</resources>
