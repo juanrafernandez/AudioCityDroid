@@ -12,6 +12,7 @@ composeBom = "2024.09.00"
 # Firebase
 firebaseBom = "33.7.0"
 googleServices = "4.4.2"
+firebaseAppDistribution = "5.1.1"
 
 # Google Maps & Location
 playServicesMaps = "19.0.0"
@@ -98,3 +99,4 @@ google-services = { id = "com.google.gms.google-services", version.ref = "google
 hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+firebase-appdistribution = { id = "com.google.firebase.appdistribution", version.ref = "firebaseAppDistribution" }

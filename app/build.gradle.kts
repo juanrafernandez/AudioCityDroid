@@ -6,6 +6,7 @@ plugins {
     alias(libs.plugins.hilt)
     alias(libs.plugins.ksp)
     alias(libs.plugins.kotlin.serialization)
+    alias(libs.plugins.firebase.appdistribution)
 }
 
 android {
@@ -22,6 +23,16 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
+    signingConfigs {
+        create("release") {
+            // Will be configured via command line or local properties
+            storeFile = file(System.getenv("KEYSTORE_PATH") ?: "keystore/release.keystore")
+            storePassword = System.getenv("KEYSTORE_PASSWORD") ?: ""
+            keyAlias = System.getenv("KEY_ALIAS") ?: "audiocity"
+            keyPassword = System.getenv("KEY_PASSWORD") ?: ""
+        }
+    }
+
     buildTypes {
         release {
             isMinifyEnabled = false
@@ -29,6 +40,20 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            signingConfig = signingConfigs.getByName("release")
+
+            firebaseAppDistribution {
+                artifactType = "APK"
+                releaseNotes = "AudioCity Android - Primera versión de prueba"
+                groups = "testers"
+            }
+        }
+        debug {
+            firebaseAppDistribution {
+                artifactType = "APK"
+                releaseNotes = "AudioCity Android - Build de desarrollo"
+                // groups = "testers" // Uncomment after creating group in Firebase Console
+            }
         }
     }
     compileOptions {

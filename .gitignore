@@ -16,3 +16,8 @@ local.properties
 
 # Firebase config (contains API keys)
 google-services.json
+
+# Keystore (sensitive)
+*.keystore
+*.jks
+keystore/
