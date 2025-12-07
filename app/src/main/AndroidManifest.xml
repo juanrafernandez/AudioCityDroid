@@ -41,6 +41,7 @@
             android:name=".MainActivity"
             android:exported="true"
             android:label="@string/app_name"
+            android:screenOrientation="portrait"
             android:theme="@style/Theme.AudioCity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -58,6 +59,16 @@
         <receiver
             android:name=".services.GeofenceBroadcastReceiver"
             android:exported="false" />
+
+        <!-- Notification Action Receiver -->
+        <receiver
+            android:name=".services.NotificationActionReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.jrlabs.audiocity.ACTION_LISTEN" />
+                <action android:name="com.jrlabs.audiocity.ACTION_SKIP" />
+            </intent-filter>
+        </receiver>
 
     </application>
 

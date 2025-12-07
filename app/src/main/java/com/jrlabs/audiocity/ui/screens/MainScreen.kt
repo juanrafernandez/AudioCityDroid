@@ -36,6 +36,10 @@ data class BottomNavItem(
 @Composable
 fun MainScreen(
     onRouteSelected: (String) -> Unit,
+    onTripSelected: (String) -> Unit = {},
+    onPlanTripClick: () -> Unit = {},
+    onAllTripsClick: () -> Unit = {},
+    onAllRoutesClick: () -> Unit = {},
     routeViewModel: RouteViewModel
 ) {
     var selectedTabIndex by rememberSaveable { mutableIntStateOf(1) } // Start on Routes tab
@@ -83,11 +87,16 @@ fun MainScreen(
     ) { paddingValues ->
         when (selectedTabIndex) {
             0 -> ExploreScreen(
-                modifier = Modifier.padding(paddingValues)
+                modifier = Modifier.padding(paddingValues),
+                routeViewModel = routeViewModel
             )
             1 -> RoutesListScreen(
                 modifier = Modifier.padding(paddingValues),
                 onRouteSelected = onRouteSelected,
+                onTripSelected = onTripSelected,
+                onPlanTripClick = onPlanTripClick,
+                onAllTripsClick = onAllTripsClick,
+                onAllRoutesClick = onAllRoutesClick,
                 viewModel = routeViewModel
             )
             2 -> ProfileScreen(

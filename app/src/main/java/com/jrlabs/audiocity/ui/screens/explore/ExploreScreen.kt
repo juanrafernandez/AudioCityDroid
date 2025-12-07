@@ -32,12 +32,14 @@ import com.jrlabs.audiocity.data.model.Stop
 import com.jrlabs.audiocity.ui.components.AudioControlBar
 import com.jrlabs.audiocity.ui.components.StopInfoCard
 import com.jrlabs.audiocity.ui.viewmodel.ExploreViewModel
+import com.jrlabs.audiocity.ui.viewmodel.RouteViewModel
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun ExploreScreen(
     modifier: Modifier = Modifier,
-    viewModel: ExploreViewModel = hiltViewModel()
+    viewModel: ExploreViewModel = hiltViewModel(),
+    routeViewModel: RouteViewModel? = null
 ) {
     val allStops by viewModel.allStops.collectAsState()
     val selectedStop by viewModel.selectedStop.collectAsState()

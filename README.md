@@ -1,6 +1,6 @@
 # AudioCity Android
 
-Aplicación de audioguías que reproduce narraciones automáticas cuando el usuario se acerca a puntos de interés turístico.
+Aplicación de audioguías que reproduce narraciones automáticas cuando el usuario se acerca a puntos de interés turístico. Versión Android del proyecto iOS AudioCity.
 
 ## Características
 
@@ -9,6 +9,11 @@ Aplicación de audioguías que reproduce narraciones automáticas cuando el usua
 - **Text-to-Speech**: Narración en español con soporte para múltiples idiomas
 - **Seguimiento en segundo plano**: Continúa funcionando con la app cerrada
 - **Mapas interactivos**: Visualiza tu posición y las paradas en Google Maps
+- **Sistema de viajes**: Planifica viajes con múltiples rutas estilo Wikiloc
+- **Favoritos**: Guarda tus rutas favoritas
+- **Búsqueda y filtros**: Encuentra rutas por ciudad, dificultad y más
+- **Notificaciones locales**: Alertas al llegar a puntos de interés
+- **Modo offline**: Descarga rutas para usar sin conexión
 
 ## Tecnologías
 
@@ -20,6 +25,7 @@ Aplicación de audioguías que reproduce narraciones automáticas cuando el usua
 - **FusedLocationProvider** + Geofencing
 - **TextToSpeech** para narración
 - **Foreground Service** para tracking en segundo plano
+- **SharedPreferences** para persistencia local
 
 ## Requisitos
 
@@ -64,18 +70,50 @@ export JAVA_HOME="/Applications/Android Studio.app/Contents/jbr/Contents/Home"
 ```
 app/src/main/java/com/jrlabs/audiocity/
 ├── data/
-│   ├── model/          # Route, Stop, AudioQueueItem
-│   └── repository/     # FirebaseRepository
-├── di/                 # Hilt modules
-├── services/           # Location, Geofence, Audio, ForegroundService
+│   ├── model/              # Route, Stop, Trip, CachedRoute, Destination
+│   └── repository/         # FirebaseRepository
+├── di/                     # Hilt modules
+├── services/
+│   ├── AudioService        # Text-to-Speech con cola
+│   ├── LocationService     # Tracking de ubicación
+│   ├── GeofenceService     # Detección de proximidad
+│   ├── TripService         # Gestión de viajes
+│   ├── FavoritesService    # Gestión de favoritos
+│   └── NotificationService # Notificaciones locales
 ├── ui/
-│   ├── components/     # Componentes reutilizables
-│   ├── navigation/     # NavGraph
-│   ├── screens/        # Pantallas de la app
-│   ├── theme/          # Colores, tipografía, tema
-│   └── viewmodel/      # ViewModels
+│   ├── components/         # RouteCardCompact, TripCard, StopInfoCard, etc.
+│   ├── navigation/         # NavGraph con rutas
+│   ├── screens/
+│   │   ├── explore/        # ExploreScreen (mapa)
+│   │   ├── routes/         # RoutesListScreen, AllRoutesScreen
+│   │   ├── trips/          # TripOnboarding, TripDetail, AllTrips
+│   │   └── profile/        # ProfileScreen
+│   ├── theme/              # Colores, tipografía, tema
+│   └── viewmodel/          # RouteViewModel, TripViewModel, ExploreViewModel
 └── AudioCityApplication.kt
 ```
+
+## Pantallas principales
+
+### Rutas (RoutesListScreen)
+- **Mis Viajes**: Viajes planificados con contador
+- **Rutas Favoritas**: Scroll horizontal
+- **Top Rutas**: Ordenadas por número de paradas
+- **Rutas de Moda**: Trending (mockeadas)
+- **Todas las Rutas**: Botón a búsqueda completa
+
+### Planificación de viaje (TripOnboardingScreen)
+1. **Destino**: Seleccionar ciudad
+2. **Rutas**: Seleccionar múltiples rutas
+3. **Opciones**: Fechas y descarga offline
+4. **Resumen**: Confirmar y crear
+
+### Búsqueda (AllRoutesScreen)
+- Buscador por texto
+- Filtro por dificultad
+- Filtro por ciudad
+- Ordenación múltiple
+- Favoritos en cada card
 
 ## Firebase App Distribution
 
@@ -121,6 +159,20 @@ firebase appdistribution:distribute app/build/outputs/apk/debug/app-debug.apk \
   "audioText": "Texto que se reproducirá..."
 }
 ```
+
+## Equivalencias iOS → Android
+
+| iOS | Android |
+|-----|---------|
+| SwiftUI | Jetpack Compose |
+| Combine | Flow/StateFlow |
+| @StateObject | viewModel() |
+| @Published | MutableStateFlow |
+| UserDefaults | SharedPreferences |
+| CoreLocation | Google Location Services |
+| CLCircularRegion | GeofencingClient |
+| AVSpeechSynthesizer | TextToSpeech |
+| MapKit | Google Maps SDK |
 
 ## Licencia
 

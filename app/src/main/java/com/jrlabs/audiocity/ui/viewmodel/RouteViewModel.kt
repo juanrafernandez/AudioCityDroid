@@ -8,11 +8,14 @@ import androidx.lifecycle.viewModelScope
 import com.jrlabs.audiocity.data.model.AudioQueueItem
 import com.jrlabs.audiocity.data.model.Route
 import com.jrlabs.audiocity.data.model.Stop
+import com.jrlabs.audiocity.data.model.Trip
 import com.jrlabs.audiocity.data.repository.FirebaseRepository
 import com.jrlabs.audiocity.services.AudioService
+import com.jrlabs.audiocity.services.FavoritesService
 import com.jrlabs.audiocity.services.GeofenceService
 import com.jrlabs.audiocity.services.LocationForegroundService
 import com.jrlabs.audiocity.services.LocationService
+import com.jrlabs.audiocity.services.TripService
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -27,7 +30,9 @@ class RouteViewModel @Inject constructor(
     private val firebaseRepository: FirebaseRepository,
     val locationService: LocationService,
     private val geofenceService: GeofenceService,
-    val audioService: AudioService
+    val audioService: AudioService,
+    private val tripService: TripService,
+    private val favoritesService: FavoritesService
 ) : AndroidViewModel(application) {
 
     // Routes
@@ -66,6 +71,10 @@ class RouteViewModel @Inject constructor(
     val isPaused: StateFlow<Boolean> = audioService.isPaused
     val currentQueueItem: StateFlow<AudioQueueItem?> = audioService.currentQueueItem
     val queuedItems: StateFlow<List<AudioQueueItem>> = audioService.queuedItems
+
+    // Trips and Favorites
+    val trips: StateFlow<List<Trip>> = tripService.trips
+    val favoriteRouteIds: StateFlow<Set<String>> = favoritesService.favoriteRouteIds
 
     init {
         observeTriggeredStops()
@@ -223,6 +232,20 @@ class RouteViewModel @Inject constructor(
 
     fun clearError() {
         _errorMessage.value = null
+    }
+
+    // Favorites
+    fun toggleFavorite(routeId: String) {
+        favoritesService.toggleFavorite(routeId)
+    }
+
+    fun isFavorite(routeId: String): Boolean {
+        return favoritesService.isFavorite(routeId)
+    }
+
+    // Trips
+    fun getTrip(tripId: String): Trip? {
+        return tripService.getTrip(tripId)
     }
 
     private fun startForegroundService(routeName: String) {
