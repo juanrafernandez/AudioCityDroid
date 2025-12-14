@@ -1,6 +1,6 @@
 package com.jrlabs.audiocity.data.model
 
-import com.google.android.gms.maps.model.LatLng
+import org.maplibre.android.geometry.LatLng
 import java.text.DecimalFormat
 import java.util.Date
 import java.util.UUID

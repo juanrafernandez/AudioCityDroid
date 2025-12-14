@@ -11,7 +11,7 @@ AudioCity Android es la versión Android de la app iOS AudioCity. Es una aplicac
 - **Arquitectura**: Clean Architecture + MVVM + SOLID
 - **DI**: Hilt
 - **Backend**: Firebase Firestore
-- **Mapas**: Google Maps SDK + Maps Compose
+- **Mapas**: MapLibre GL (estilo Apple Maps)
 - **Ubicación**: FusedLocationProvider + Geofencing
 - **Audio**: TextToSpeech
 - **Persistencia local**: SharedPreferences (trips, favorites, history, points, user routes)
@@ -24,9 +24,10 @@ AudioCity Android es la versión Android de la app iOS AudioCity. Es una aplicac
 - **App ID**: `1:294754708542:android:64178b9f450ebc29c5b56f`
 - **Archivo config**: `app/google-services.json`
 
-### Google Maps
-- **API Key**: `AIzaSyCbVzD0lqiMMsZVvv6hM0WyI4kpHJpUrWg`
-- **Ubicación**: `app/src/main/res/values/strings.xml`
+### MapLibre
+- **Estilo**: Apple Maps-like (light/dark)
+- **Estilos**: `app/src/main/assets/map_style_light.json` y `map_style_dark.json`
+- **Tiles**: MapTiler (requiere API key para producción)
 
 ### Keystore (Release)
 - **Path**: `app/keystore/release.keystore`
@@ -247,7 +248,7 @@ app/src/main/java/com/jrlabs/audiocity/
 | CoreLocation | Google Location Services |
 | CLCircularRegion | GeofencingClient |
 | AVSpeechSynthesizer | TextToSpeech |
-| MapKit | Google Maps SDK |
+| MapKit | MapLibre GL |
 | UNUserNotificationCenter | NotificationManager |
 | Protocol | Interface (Kotlin) |
 
@@ -319,7 +320,14 @@ El proyecto Android debe mantenerse sincronizado con las features del proyecto i
 - ✅ LocationService
 - ✅ AudioService
 
+### MapLibre (reemplazo de Google Maps)
+- ✅ Eliminado Google Maps SDK (evita costos)
+- ✅ MapLibre GL con estilo Apple Maps
+- ✅ Estilos personalizados light/dark en assets
+- ✅ Marcadores custom con Canvas/Bitmap
+- ✅ ExploreScreen y ActiveRouteScreen migrados
+
 ### APK en Firebase App Distribution
-- Versión: 1.0 (1)
+- Versión: 1.0.0 (2)
 - Estado: Disponible para android-testers
 - Console: https://console.firebase.google.com/project/audiocity-poc/appdistribution/app/android:com.jrlabs.audiocity/releases

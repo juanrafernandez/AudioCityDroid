@@ -1,5 +1,5 @@
 [versions]
-agp = "8.13.1"
+agp = "8.13.2"
 kotlin = "2.0.21"
 coreKtx = "1.17.0"
 junit = "4.13.2"
@@ -14,10 +14,11 @@ firebaseBom = "33.7.0"
 googleServices = "4.4.2"
 firebaseAppDistribution = "5.1.1"
 
-# Google Maps & Location
-playServicesMaps = "19.0.0"
+# Location Services
 playServicesLocation = "21.3.0"
-mapsCompose = "6.2.1"
+
+# MapLibre (11.8.0+ for 16KB page size support)
+maplibre = "11.8.0"
 
 # Navigation
 navigationCompose = "2.8.5"
@@ -65,10 +66,11 @@ firebase-bom = { group = "com.google.firebase", name = "firebase-bom", version.r
 firebase-firestore = { group = "com.google.firebase", name = "firebase-firestore-ktx" }
 firebase-analytics = { group = "com.google.firebase", name = "firebase-analytics-ktx" }
 
-# Google Maps & Location
-play-services-maps = { group = "com.google.android.gms", name = "play-services-maps", version.ref = "playServicesMaps" }
+# Location Services
 play-services-location = { group = "com.google.android.gms", name = "play-services-location", version.ref = "playServicesLocation" }
-maps-compose = { group = "com.google.maps.android", name = "maps-compose", version.ref = "mapsCompose" }
+
+# MapLibre
+maplibre = { group = "org.maplibre.gl", name = "android-sdk", version.ref = "maplibre" }
 
 # Navigation
 androidx-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigationCompose" }

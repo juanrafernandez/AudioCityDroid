@@ -93,10 +93,11 @@ dependencies {
     implementation(libs.firebase.firestore)
     implementation(libs.firebase.analytics)
 
-    // Google Maps & Location
-    implementation(libs.play.services.maps)
+    // Location Services
     implementation(libs.play.services.location)
-    implementation(libs.maps.compose)
+
+    // MapLibre (free OpenStreetMap alternative to Google Maps)
+    implementation(libs.maplibre)
 
     // Hilt (Dependency Injection)
     implementation(libs.hilt.android)

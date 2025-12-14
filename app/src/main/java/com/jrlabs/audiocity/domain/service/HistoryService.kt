@@ -37,7 +37,7 @@ interface HistoryService {
     val totalTimeMinutes: StateFlow<Int>
 
     /**
-     * Records a completed route.
+     * Records a completed route (legacy method).
      * @param route The completed route.
      * @param stopsVisited Number of stops the user visited.
      * @param durationMinutes Actual time spent on the route.
@@ -51,6 +51,30 @@ interface HistoryService {
         distanceKm: Double,
         pointsEarned: Int
     )
+
+    /**
+     * Records when a route is started.
+     */
+    fun recordRouteStarted(
+        routeId: String,
+        routeName: String,
+        routeCity: String,
+        totalStops: Int,
+        distanceKm: Double
+    )
+
+    /**
+     * Records when a route is ended (completed or cancelled).
+     */
+    fun recordRouteEnded(
+        stopsVisited: Int,
+        wasCompleted: Boolean
+    )
+
+    /**
+     * Check if there's an active route being tracked.
+     */
+    fun hasActiveRoute(): Boolean
 
     /**
      * Clears all history.

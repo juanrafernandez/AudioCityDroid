@@ -5,6 +5,7 @@ import android.content.SharedPreferences
 import com.jrlabs.audiocity.domain.model.HistoryGroup
 import com.jrlabs.audiocity.domain.model.Route
 import com.jrlabs.audiocity.domain.model.RouteHistoryEntry
+import com.jrlabs.audiocity.domain.model.RouteStatus
 import com.jrlabs.audiocity.domain.service.HistoryService
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -25,7 +26,9 @@ private data class StoredHistoryEntry(
     val routeId: String,
     val routeName: String,
     val routeCity: String,
-    val completedAt: Long,
+    val startedAt: Long,
+    val endedAt: Long,
+    val status: String = "COMPLETED",
     val durationMinutes: Int,
     val distanceKm: Double,
     val stopsVisited: Int,
@@ -62,6 +65,14 @@ class LocalHistoryService @Inject constructor(
 
     private val _groupedHistory = MutableStateFlow<List<HistoryGroup>>(emptyList())
     override val groupedHistory: StateFlow<List<HistoryGroup>> = _groupedHistory.asStateFlow()
+
+    // Track active route
+    private var activeRouteStartTime: Date? = null
+    private var activeRouteId: String? = null
+    private var activeRouteName: String? = null
+    private var activeRouteCity: String? = null
+    private var activeRouteTotalStops: Int = 0
+    private var activeRouteDistanceKm: Double = 0.0
 
     private val _totalRoutesCompleted = MutableStateFlow(0)
     override val totalRoutesCompleted: StateFlow<Int> = _totalRoutesCompleted.asStateFlow()
@@ -110,13 +121,13 @@ class LocalHistoryService @Inject constructor(
 
         // Group by date
         val grouped = entries
-            .sortedByDescending { it.completedAt }
+            .sortedByDescending { it.startedAt }
             .groupBy { it.dateKey }
             .map { (dateKey, entriesInGroup) ->
                 HistoryGroup(
                     dateKey = dateKey,
                     displayDate = entriesInGroup.firstOrNull()?.let {
-                        displayDateFormat.format(it.completedAt)
+                        displayDateFormat.format(it.startedAt)
                     } ?: dateKey,
                     entries = entriesInGroup
                 )
@@ -154,7 +165,68 @@ class LocalHistoryService @Inject constructor(
     }
 
     override fun getMostRecentEntry(): RouteHistoryEntry? {
-        return _historyEntries.value.maxByOrNull { it.completedAt }
+        return _historyEntries.value.maxByOrNull { it.startedAt }
+    }
+
+    override fun recordRouteStarted(
+        routeId: String,
+        routeName: String,
+        routeCity: String,
+        totalStops: Int,
+        distanceKm: Double
+    ) {
+        activeRouteStartTime = Date()
+        activeRouteId = routeId
+        activeRouteName = routeName
+        activeRouteCity = routeCity
+        activeRouteTotalStops = totalStops
+        activeRouteDistanceKm = distanceKm
+    }
+
+    override fun recordRouteEnded(
+        stopsVisited: Int,
+        wasCompleted: Boolean
+    ) {
+        val startTime = activeRouteStartTime ?: return
+        val routeId = activeRouteId ?: return
+        val routeName = activeRouteName ?: return
+        val routeCity = activeRouteCity ?: return
+
+        val endTime = Date()
+        val durationMillis = endTime.time - startTime.time
+        val durationMinutes = (durationMillis / 60000).toInt()
+
+        val entry = RouteHistoryEntry(
+            routeId = routeId,
+            routeName = routeName,
+            routeCity = routeCity,
+            startedAt = startTime,
+            endedAt = endTime,
+            status = if (wasCompleted) RouteStatus.COMPLETED else RouteStatus.CANCELLED,
+            durationMinutes = durationMinutes,
+            distanceKm = activeRouteDistanceKm,
+            stopsVisited = stopsVisited,
+            totalStops = activeRouteTotalStops,
+            pointsEarned = if (wasCompleted) stopsVisited * 10 else stopsVisited * 5
+        )
+
+        _historyEntries.value = listOf(entry) + _historyEntries.value
+        updateDerivedValues()
+        saveToPrefs()
+
+        // Clear active route tracking
+        clearActiveRoute()
+    }
+
+    override fun hasActiveRoute(): Boolean = activeRouteStartTime != null
+
+    private fun clearActiveRoute() {
+        activeRouteStartTime = null
+        activeRouteId = null
+        activeRouteName = null
+        activeRouteCity = null
+        activeRouteTotalStops = 0
+        activeRouteDistanceKm = 0.0
     }
 
     private fun StoredHistoryEntry.toEntry(): RouteHistoryEntry {
@@ -163,7 +235,9 @@ class LocalHistoryService @Inject constructor(
             routeId = routeId,
             routeName = routeName,
             routeCity = routeCity,
-            completedAt = Date(completedAt),
+            startedAt = Date(startedAt),
+            endedAt = Date(endedAt),
+            status = try { RouteStatus.valueOf(status) } catch (e: Exception) { RouteStatus.COMPLETED },
             durationMinutes = durationMinutes,
             distanceKm = distanceKm,
             stopsVisited = stopsVisited,
@@ -178,7 +252,9 @@ class LocalHistoryService @Inject constructor(
             routeId = routeId,
             routeName = routeName,
             routeCity = routeCity,
-            completedAt = completedAt.time,
+            startedAt = startedAt.time,
+            endedAt = endedAt.time,
+            status = status.name,
             durationMinutes = durationMinutes,
             distanceKm = distanceKm,
             stopsVisited = stopsVisited,

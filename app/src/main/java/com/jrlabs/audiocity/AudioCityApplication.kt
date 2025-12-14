@@ -5,12 +5,15 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.os.Build
 import dagger.hilt.android.HiltAndroidApp
+import org.maplibre.android.MapLibre
 
 @HiltAndroidApp
 class AudioCityApplication : Application() {
 
     override fun onCreate() {
         super.onCreate()
+        // Initialize MapLibre before any MapView is created
+        MapLibre.getInstance(this)
         createNotificationChannel()
     }
 
