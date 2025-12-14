@@ -13,12 +13,16 @@ import com.jrlabs.audiocity.ui.screens.MainScreen
 import com.jrlabs.audiocity.ui.screens.RouteDetailScreen
 import com.jrlabs.audiocity.ui.screens.ActiveRouteScreen
 import com.jrlabs.audiocity.ui.screens.SplashScreen
+import com.jrlabs.audiocity.ui.screens.myroutes.AddStopScreen
+import com.jrlabs.audiocity.ui.screens.myroutes.CreateRouteScreen
+import com.jrlabs.audiocity.ui.screens.myroutes.EditRouteScreen
 import com.jrlabs.audiocity.ui.screens.routes.AllRoutesScreen
 import com.jrlabs.audiocity.ui.screens.trips.AllTripsScreen
 import com.jrlabs.audiocity.ui.screens.trips.TripDetailScreen
 import com.jrlabs.audiocity.ui.screens.trips.TripOnboardingScreen
 import com.jrlabs.audiocity.ui.viewmodel.RouteViewModel
 import com.jrlabs.audiocity.ui.viewmodel.TripViewModel
+import com.jrlabs.audiocity.ui.viewmodel.UserRoutesViewModel
 
 sealed class Screen(val route: String) {
     object Splash : Screen("splash")
@@ -33,6 +37,14 @@ sealed class Screen(val route: String) {
     object TripDetail : Screen("trip_detail/{tripId}") {
         fun createRoute(tripId: String) = "trip_detail/$tripId"
     }
+    // UGC Routes
+    object CreateRoute : Screen("create_route")
+    object EditRoute : Screen("edit_route/{routeId}") {
+        fun createRoute(routeId: String) = "edit_route/$routeId"
+    }
+    object AddStop : Screen("add_stop/{routeId}") {
+        fun createRoute(routeId: String) = "add_stop/$routeId"
+    }
 }
 
 @Composable
@@ -43,6 +55,7 @@ fun NavGraph(
     // Shared ViewModels across all screens
     val routeViewModel: RouteViewModel = hiltViewModel()
     val tripViewModel: TripViewModel = hiltViewModel()
+    val userRoutesViewModel: UserRoutesViewModel = hiltViewModel()
 
     NavHost(
         navController = navController,
@@ -74,6 +87,12 @@ fun NavGraph(
                 },
                 onAllRoutesClick = {
                     navController.navigate(Screen.AllRoutes.route)
+                },
+                onCreateRoute = {
+                    navController.navigate(Screen.CreateRoute.route)
+                },
+                onEditRoute = { routeId ->
+                    navController.navigate(Screen.EditRoute.createRoute(routeId))
                 },
                 routeViewModel = routeViewModel
             )
@@ -181,6 +200,51 @@ fun NavGraph(
                 // Trip no encontrado, volver
                 navController.popBackStack()
             }
+        }
+
+        // UGC Routes - Create Route
+        composable(Screen.CreateRoute.route) {
+            CreateRouteScreen(
+                viewModel = userRoutesViewModel,
+                onDismiss = { navController.popBackStack() },
+                onRouteCreated = { routeId ->
+                    navController.popBackStack()
+                    navController.navigate(Screen.EditRoute.createRoute(routeId))
+                }
+            )
+        }
+
+        // UGC Routes - Edit Route
+        composable(
+            route = Screen.EditRoute.route,
+            arguments = listOf(
+                navArgument("routeId") { type = NavType.StringType }
+            )
+        ) { backStackEntry ->
+            val routeId = backStackEntry.arguments?.getString("routeId") ?: ""
+            EditRouteScreen(
+                routeId = routeId,
+                viewModel = userRoutesViewModel,
+                onDismiss = { navController.popBackStack() },
+                onAddStop = { id ->
+                    navController.navigate(Screen.AddStop.createRoute(id))
+                }
+            )
+        }
+
+        // UGC Routes - Add Stop
+        composable(
+            route = Screen.AddStop.route,
+            arguments = listOf(
+                navArgument("routeId") { type = NavType.StringType }
+            )
+        ) { backStackEntry ->
+            val routeId = backStackEntry.arguments?.getString("routeId") ?: ""
+            AddStopScreen(
+                routeId = routeId,
+                viewModel = userRoutesViewModel,
+                onDismiss = { navController.popBackStack() }
+            )
         }
     }
 }

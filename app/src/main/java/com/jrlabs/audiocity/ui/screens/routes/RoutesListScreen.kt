@@ -1,5 +1,6 @@
 package com.jrlabs.audiocity.ui.screens.routes
 
+import android.location.Location
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
@@ -26,12 +27,16 @@ import androidx.compose.ui.unit.sp
 import com.jrlabs.audiocity.data.model.Route
 import com.jrlabs.audiocity.data.model.Trip
 import com.jrlabs.audiocity.ui.components.*
+import com.jrlabs.audiocity.ui.theme.ACGold
+import com.jrlabs.audiocity.ui.theme.ACPrimary
+import com.jrlabs.audiocity.ui.theme.ACSecondary
+import com.jrlabs.audiocity.ui.theme.ACWarning
 import com.jrlabs.audiocity.ui.viewmodel.RouteViewModel
 
-// Colores de sección
-val YellowColor = Color(0xFFFFEB3B)
-val OrangeColor = Color(0xFFFF9800)
-val RedColor = Color(0xFFF44336)
+// Colores de sección (usando sistema de diseño)
+val YellowColor = ACGold
+val OrangeColor = ACWarning
+val RedColor = ACPrimary
 
 /**
  * Pantalla principal de rutas con secciones estilo Wikiloc
@@ -52,16 +57,31 @@ fun RoutesListScreen(
     val errorMessage by viewModel.errorMessage.collectAsState()
     val trips by viewModel.trips.collectAsState()
     val favoriteRouteIds by viewModel.favoriteRouteIds.collectAsState()
+    val userLocation by viewModel.userLocation.collectAsState()
 
-    // Rutas filtradas por sección
-    val favoriteRoutes = remember(routes, favoriteRouteIds) {
-        routes.filter { favoriteRouteIds.contains(it.id) }
+    // Función para ordenar por proximidad
+    fun sortByProximity(routeList: List<Route>): List<Route> {
+        val location = userLocation ?: return routeList
+        return routeList.sortedBy { route ->
+            val results = FloatArray(1)
+            Location.distanceBetween(
+                location.latitude, location.longitude,
+                route.startLocation.latitude, route.startLocation.longitude,
+                results
+            )
+            results[0]
+        }
     }
 
-    val topRoutes = remember(routes, favoriteRouteIds) {
-        routes.filter { !favoriteRouteIds.contains(it.id) }
-            .sortedByDescending { it.numStops }
-            .take(5)
+    // Rutas filtradas por sección y ordenadas por proximidad
+    val favoriteRoutes = remember(routes, favoriteRouteIds, userLocation) {
+        sortByProximity(routes.filter { favoriteRouteIds.contains(it.id) })
+    }
+
+    val topRoutes = remember(routes, favoriteRouteIds, userLocation) {
+        sortByProximity(
+            routes.filter { !favoriteRouteIds.contains(it.id) }
+        ).take(5)
     }
 
     // Rutas de moda (mockeadas por ahora, igual que en iOS)
@@ -78,6 +98,8 @@ fun RoutesListScreen(
 
     LaunchedEffect(Unit) {
         viewModel.loadAvailableRoutes()
+        // Request location for sorting routes by proximity
+        viewModel.requestLocationForSorting()
     }
 
     Box(modifier = modifier.fillMaxSize()) {
@@ -175,25 +197,25 @@ fun RoutesListScreen(
 
                     Spacer(modifier = Modifier.height(24.dp))
 
-                    // Botón: Todas las Rutas
+                    // Botón: Todas las Rutas (usando color coral primario)
                     Button(
                         onClick = onAllRoutesClick,
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(horizontal = 16.dp),
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = BlueColor
+                            containerColor = ACPrimary
                         ),
                         shape = RoundedCornerShape(12.dp)
                     ) {
                         Icon(
-                            imageVector = Icons.Default.Map,
+                            imageVector = Icons.Default.Search,
                             contentDescription = null,
                             modifier = Modifier.size(20.dp)
                         )
                         Spacer(modifier = Modifier.width(8.dp))
                         Text(
-                            text = "Todas las Rutas",
+                            text = "Explorar todas las rutas",
                             style = MaterialTheme.typography.titleSmall,
                             fontWeight = FontWeight.SemiBold
                         )
@@ -231,14 +253,14 @@ fun TripsSection(
                     modifier = Modifier
                         .size(28.dp)
                         .clip(CircleShape)
-                        .background(PurpleColor.copy(alpha = 0.15f)),
+                        .background(ACSecondary.copy(alpha = 0.15f)),
                     contentAlignment = Alignment.Center
                 ) {
                     Icon(
                         imageVector = Icons.Default.Luggage,
                         contentDescription = null,
                         modifier = Modifier.size(16.dp),
-                        tint = PurpleColor
+                        tint = ACSecondary
                     )
                 }
                 Spacer(modifier = Modifier.width(8.dp))
@@ -258,11 +280,11 @@ fun TripsSection(
             }
 
             Row {
-                // Botón Planificar
+                // Botón Planificar (usando color primario coral)
                 Surface(
                     modifier = Modifier.clickable { onPlanClick() },
                     shape = RoundedCornerShape(16.dp),
-                    color = PurpleColor
+                    color = ACPrimary
                 ) {
                     Text(
                         text = "Planificar",
@@ -279,7 +301,7 @@ fun TripsSection(
                     TextButton(onClick = onSeeAllClick) {
                         Text(
                             text = "Ver todos",
-                            color = PurpleColor
+                            color = ACPrimary
                         )
                     }
                 }

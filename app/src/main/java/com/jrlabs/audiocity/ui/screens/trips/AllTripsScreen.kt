@@ -18,8 +18,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.jrlabs.audiocity.data.model.Trip
-import com.jrlabs.audiocity.ui.components.PurpleColor
 import com.jrlabs.audiocity.ui.components.TripCard
+import com.jrlabs.audiocity.ui.theme.ACPrimary
+import com.jrlabs.audiocity.ui.theme.ACSecondary
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -60,7 +61,7 @@ fun AllTripsScreen(
         floatingActionButton = {
             FloatingActionButton(
                 onClick = onPlanTripClick,
-                containerColor = PurpleColor
+                containerColor = ACSecondary
             ) {
                 Icon(
                     imageVector = Icons.Default.Add,
@@ -104,7 +105,7 @@ fun AllTripsScreen(
                     Spacer(modifier = Modifier.height(24.dp))
                     Button(
                         onClick = onPlanTripClick,
-                        colors = ButtonDefaults.buttonColors(containerColor = PurpleColor)
+                        colors = ButtonDefaults.buttonColors(containerColor = ACSecondary)
                     ) {
                         Icon(
                             imageVector = Icons.Default.FlightTakeoff,

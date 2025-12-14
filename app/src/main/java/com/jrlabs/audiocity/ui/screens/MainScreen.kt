@@ -2,12 +2,16 @@ package com.jrlabs.audiocity.ui.screens
 
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.material.icons.filled.Explore
+import androidx.compose.material.icons.filled.Headphones
+import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.Route
+import androidx.compose.material.icons.outlined.AddCircle
 import androidx.compose.material.icons.outlined.Explore
+import androidx.compose.material.icons.outlined.Headphones
+import androidx.compose.material.icons.outlined.History
 import androidx.compose.material.icons.outlined.Person
-import androidx.compose.material.icons.outlined.Route
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -24,6 +28,8 @@ import androidx.compose.ui.res.stringResource
 import com.jrlabs.audiocity.R
 import com.jrlabs.audiocity.ui.viewmodel.RouteViewModel
 import com.jrlabs.audiocity.ui.screens.explore.ExploreScreen
+import com.jrlabs.audiocity.ui.screens.history.HistoryScreen
+import com.jrlabs.audiocity.ui.screens.myroutes.MyRoutesScreen
 import com.jrlabs.audiocity.ui.screens.profile.ProfileScreen
 import com.jrlabs.audiocity.ui.screens.routes.RoutesListScreen
 
@@ -40,20 +46,32 @@ fun MainScreen(
     onPlanTripClick: () -> Unit = {},
     onAllTripsClick: () -> Unit = {},
     onAllRoutesClick: () -> Unit = {},
+    onCreateRoute: () -> Unit = {},
+    onEditRoute: (String) -> Unit = {},
     routeViewModel: RouteViewModel
 ) {
-    var selectedTabIndex by rememberSaveable { mutableIntStateOf(1) } // Start on Routes tab
+    var selectedTabIndex by rememberSaveable { mutableIntStateOf(0) } // Start on Routes tab
 
     val items = listOf(
+        BottomNavItem(
+            title = stringResource(R.string.tab_routes),
+            selectedIcon = Icons.Filled.Headphones,
+            unselectedIcon = Icons.Outlined.Headphones
+        ),
         BottomNavItem(
             title = stringResource(R.string.tab_explore),
             selectedIcon = Icons.Filled.Explore,
             unselectedIcon = Icons.Outlined.Explore
         ),
         BottomNavItem(
-            title = stringResource(R.string.tab_routes),
-            selectedIcon = Icons.Filled.Route,
-            unselectedIcon = Icons.Outlined.Route
+            title = stringResource(R.string.tab_create),
+            selectedIcon = Icons.Filled.AddCircle,
+            unselectedIcon = Icons.Outlined.AddCircle
+        ),
+        BottomNavItem(
+            title = stringResource(R.string.tab_history),
+            selectedIcon = Icons.Filled.History,
+            unselectedIcon = Icons.Outlined.History
         ),
         BottomNavItem(
             title = stringResource(R.string.tab_profile),
@@ -86,11 +104,7 @@ fun MainScreen(
         }
     ) { paddingValues ->
         when (selectedTabIndex) {
-            0 -> ExploreScreen(
-                modifier = Modifier.padding(paddingValues),
-                routeViewModel = routeViewModel
-            )
-            1 -> RoutesListScreen(
+            0 -> RoutesListScreen(
                 modifier = Modifier.padding(paddingValues),
                 onRouteSelected = onRouteSelected,
                 onTripSelected = onTripSelected,
@@ -99,9 +113,20 @@ fun MainScreen(
                 onAllRoutesClick = onAllRoutesClick,
                 viewModel = routeViewModel
             )
-            2 -> ProfileScreen(
+            1 -> ExploreScreen(
                 modifier = Modifier.padding(paddingValues),
-                viewModel = routeViewModel
+                routeViewModel = routeViewModel
+            )
+            2 -> MyRoutesScreen(
+                modifier = Modifier.padding(paddingValues),
+                onCreateRoute = onCreateRoute,
+                onRouteSelected = { route -> onEditRoute(route.id) }
+            )
+            3 -> HistoryScreen(
+                modifier = Modifier.padding(paddingValues)
+            )
+            4 -> ProfileScreen(
+                modifier = Modifier.padding(paddingValues)
             )
         }
     }

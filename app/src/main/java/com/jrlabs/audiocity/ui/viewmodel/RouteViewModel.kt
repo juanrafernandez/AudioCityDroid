@@ -76,6 +76,11 @@ class RouteViewModel @Inject constructor(
     val trips: StateFlow<List<Trip>> = tripService.trips
     val favoriteRouteIds: StateFlow<Set<String>> = favoritesService.favoriteRouteIds
 
+    // User location for sorting routes by proximity
+    data class UserLocationData(val latitude: Double, val longitude: Double)
+    private val _userLocation = MutableStateFlow<UserLocationData?>(null)
+    val userLocation: StateFlow<UserLocationData?> = _userLocation.asStateFlow()
+
     init {
         observeTriggeredStops()
         observeLocationUpdates()
@@ -93,12 +98,22 @@ class RouteViewModel @Inject constructor(
     private fun observeLocationUpdates() {
         viewModelScope.launch {
             locationService.currentLocation.collectLatest { location ->
-                if (location != null && _isRouteActive.value) {
-                    geofenceService.checkProximity()
-                    _visitedStopsCount.value = geofenceService.getVisitedCount()
+                if (location != null) {
+                    // Update user location for proximity sorting
+                    _userLocation.value = UserLocationData(location.latitude, location.longitude)
+
+                    if (_isRouteActive.value) {
+                        geofenceService.checkProximity()
+                        _visitedStopsCount.value = geofenceService.getVisitedCount()
+                    }
                 }
             }
         }
+    }
+
+    // Request single location update for sorting
+    fun requestLocationForSorting() {
+        locationService.requestSingleLocation()
     }
 
     private fun observeCurrentQueueItem() {

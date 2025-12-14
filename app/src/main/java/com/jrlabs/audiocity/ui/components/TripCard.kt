@@ -1,31 +1,38 @@
 package com.jrlabs.audiocity.ui.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.PathEffect
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.jrlabs.audiocity.data.model.Trip
-
-// Colores de la app
-val PurpleColor = Color(0xFF9C27B0)
-val GreenColor = Color(0xFF4CAF50)
-val BlueColor = Color(0xFF2196F3)
+import com.jrlabs.audiocity.ui.theme.ACInfo
+import com.jrlabs.audiocity.ui.theme.ACSecondary
+import com.jrlabs.audiocity.ui.theme.ACSecondaryLight
+import com.jrlabs.audiocity.ui.theme.ACSuccess
+import com.jrlabs.audiocity.ui.theme.ACTextSecondary
+import com.jrlabs.audiocity.ui.theme.ACTextTertiary
 
 /**
  * Card para mostrar un viaje en la sección Mis Viajes
+ * Diseño actualizado para coincidir con iOS
  */
 @Composable
 fun TripCard(
@@ -46,121 +53,113 @@ fun TripCard(
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
     ) {
-        Column(
+        Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp)
+                .padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.Top
-            ) {
-                // Icono y destino
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.weight(1f)
-                ) {
-                    // Icono de maleta
-                    Box(
-                        modifier = Modifier
-                            .size(44.dp)
-                            .clip(CircleShape)
-                            .background(PurpleColor.copy(alpha = 0.15f)),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Luggage,
-                            contentDescription = null,
-                            modifier = Modifier.size(24.dp),
-                            tint = PurpleColor
-                        )
-                    }
-
-                    Spacer(modifier = Modifier.width(12.dp))
-
-                    Column {
-                        Text(
-                            text = trip.destinationCity,
-                            style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.SemiBold,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
-                        )
-                        Text(
-                            text = trip.destinationCountry,
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
-                        )
-                    }
-                }
-
-                // Badge de estado
-                TripStatusBadge(trip = trip)
-            }
-
-            Spacer(modifier = Modifier.height(12.dp))
-
-            // Fechas si existen
-            trip.dateRangeFormatted()?.let { dateRange ->
-                Row(
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.CalendarMonth,
-                        contentDescription = null,
-                        modifier = Modifier.size(16.dp),
-                        tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
-                    )
-                    Spacer(modifier = Modifier.width(6.dp))
-                    Text(
-                        text = dateRange,
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
-                    )
-                }
-                Spacer(modifier = Modifier.height(8.dp))
-            }
-
-            // Contador de rutas
-            Row(
-                verticalAlignment = Alignment.CenterVertically
+            // Icono turquesa (como iOS)
+            Box(
+                modifier = Modifier
+                    .size(56.dp)
+                    .clip(RoundedCornerShape(12.dp))
+                    .background(ACSecondaryLight),
+                contentAlignment = Alignment.Center
             ) {
                 Icon(
-                    imageVector = Icons.Default.Route,
+                    imageVector = Icons.Default.LocationOn,
                     contentDescription = null,
-                    modifier = Modifier.size(16.dp),
-                    tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
-                )
-                Spacer(modifier = Modifier.width(6.dp))
-                Text(
-                    text = "${trip.routeCount} ruta${if (trip.routeCount != 1) "s" else ""} seleccionada${if (trip.routeCount != 1) "s" else ""}",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
+                    modifier = Modifier.size(24.dp),
+                    tint = ACSecondary
                 )
             }
 
-            // Indicador offline si aplica
-            if (trip.isOfflineAvailable) {
-                Spacer(modifier = Modifier.height(8.dp))
-                Row(
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.CloudDone,
-                        contentDescription = null,
-                        modifier = Modifier.size(16.dp),
-                        tint = GreenColor
-                    )
-                    Spacer(modifier = Modifier.width(6.dp))
+            Spacer(modifier = Modifier.width(16.dp))
+
+            // Información del viaje
+            Column(modifier = Modifier.weight(1f)) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(
-                        text = "Disponible offline",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = GreenColor
+                        text = trip.destinationCity,
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.SemiBold,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
                     )
+
+                    // Badge de estado
+                    if (trip.isCurrent) {
+                        Spacer(modifier = Modifier.width(8.dp))
+                        TripStatusBadge(trip = trip)
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(4.dp))
+
+                // Meta badges en fila
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    // Rutas
+                    TripMetaBadge(
+                        icon = Icons.Default.Map,
+                        text = "${trip.routeCount} rutas"
+                    )
+
+                    // Offline
+                    if (trip.isOfflineAvailable) {
+                        TripMetaBadge(
+                            icon = Icons.Default.CloudDone,
+                            text = "Offline",
+                            color = ACSuccess
+                        )
+                    }
+
+                    // Fechas
+                    trip.dateRangeFormatted()?.let { dateRange ->
+                        TripMetaBadge(
+                            icon = Icons.Default.CalendarMonth,
+                            text = dateRange
+                        )
+                    }
                 }
             }
+
+            // Chevron
+            Icon(
+                imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                contentDescription = null,
+                tint = ACTextTertiary
+            )
         }
+    }
+}
+
+/**
+ * Meta badge para información del viaje
+ */
+@Composable
+fun TripMetaBadge(
+    icon: androidx.compose.ui.graphics.vector.ImageVector,
+    text: String,
+    color: Color = ACTextSecondary
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(4.dp)
+    ) {
+        Icon(
+            imageVector = icon,
+            contentDescription = null,
+            modifier = Modifier.size(14.dp),
+            tint = color
+        )
+        Text(
+            text = text,
+            style = MaterialTheme.typography.bodySmall,
+            color = color
+        )
     }
 }
 
@@ -170,8 +169,8 @@ fun TripCard(
 @Composable
 fun TripStatusBadge(trip: Trip) {
     val (color, text) = when {
-        trip.isCurrent -> Pair(GreenColor, "En curso")
-        trip.isFuture -> Pair(BlueColor, "Próximo")
+        trip.isCurrent -> Pair(ACSuccess, "Activo")
+        trip.isFuture -> Pair(ACInfo, "Próximo")
         trip.isPast -> Pair(Color.Gray, "Pasado")
         else -> Pair(Color.Gray, "")
     }
@@ -183,7 +182,7 @@ fun TripStatusBadge(trip: Trip) {
         ) {
             Text(
                 text = text,
-                modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp),
+                modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
                 style = MaterialTheme.typography.labelSmall,
                 color = color,
                 fontWeight = FontWeight.Medium
@@ -194,44 +193,81 @@ fun TripStatusBadge(trip: Trip) {
 
 /**
  * Card para crear nuevo viaje (estado vacío)
+ * Diseño iOS: borde punteado turquesa, icono de avión, chevron derecha
  */
 @Composable
 fun NewTripCard(
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Card(
+    val borderColor = ACSecondary.copy(alpha = 0.3f)
+    val dashWidth = 6.dp
+    val dashGap = 6.dp
+
+    Box(
         modifier = modifier
             .fillMaxWidth()
-            .clickable { onClick() },
-        shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = PurpleColor.copy(alpha = 0.08f)
-        ),
-        border = androidx.compose.foundation.BorderStroke(
-            width = 1.dp,
-            color = PurpleColor.copy(alpha = 0.3f)
-        )
+            .drawBehind {
+                val stroke = Stroke(
+                    width = 1.5.dp.toPx(),
+                    pathEffect = PathEffect.dashPathEffect(
+                        floatArrayOf(dashWidth.toPx(), dashGap.toPx()),
+                        0f
+                    )
+                )
+                drawRoundRect(
+                    color = borderColor,
+                    style = stroke,
+                    cornerRadius = androidx.compose.ui.geometry.CornerRadius(12.dp.toPx())
+                )
+            }
+            .clip(RoundedCornerShape(12.dp))
+            .clickable { onClick() }
+            .padding(16.dp)
     ) {
         Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(20.dp),
-            horizontalArrangement = Arrangement.Center,
+            modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
         ) {
+            // Círculo turquesa con icono de avión
+            Box(
+                modifier = Modifier
+                    .size(48.dp)
+                    .clip(CircleShape)
+                    .background(ACSecondaryLight),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    imageVector = Icons.Default.FlightTakeoff,
+                    contentDescription = null,
+                    modifier = Modifier.size(20.dp),
+                    tint = ACSecondary
+                )
+            }
+
+            Spacer(modifier = Modifier.width(16.dp))
+
+            // Textos
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = "Planifica tu primer viaje",
+                    style = MaterialTheme.typography.titleSmall,
+                    fontWeight = FontWeight.Medium
+                )
+                Spacer(modifier = Modifier.height(2.dp))
+                Text(
+                    text = "Selecciona destino y rutas para tenerlas offline",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = ACTextSecondary
+                )
+            }
+
+            // Chevron
             Icon(
-                imageVector = Icons.Default.FlightTakeoff,
+                imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
                 contentDescription = null,
-                modifier = Modifier.size(24.dp),
-                tint = PurpleColor
-            )
-            Spacer(modifier = Modifier.width(12.dp))
-            Text(
-                text = "Planificar un viaje",
-                style = MaterialTheme.typography.titleSmall,
-                color = PurpleColor,
-                fontWeight = FontWeight.SemiBold
+                modifier = Modifier.size(20.dp),
+                tint = ACTextTertiary
             )
         }
     }

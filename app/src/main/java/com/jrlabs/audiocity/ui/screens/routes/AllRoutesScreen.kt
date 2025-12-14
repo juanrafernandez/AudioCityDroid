@@ -22,7 +22,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.jrlabs.audiocity.data.model.Route
 import com.jrlabs.audiocity.ui.components.DifficultyBadge
-import com.jrlabs.audiocity.ui.components.PurpleColor
+import com.jrlabs.audiocity.ui.theme.ACPrimary
 import com.jrlabs.audiocity.ui.viewmodel.RouteViewModel
 
 /**

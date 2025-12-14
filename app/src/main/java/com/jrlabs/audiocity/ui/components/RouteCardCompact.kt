@@ -3,7 +3,6 @@ package com.jrlabs.audiocity.ui.components
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
@@ -13,17 +12,27 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.AsyncImage
+import coil.request.ImageRequest
 import com.jrlabs.audiocity.data.model.Route
+import com.jrlabs.audiocity.ui.theme.ACPrimary
+import com.jrlabs.audiocity.ui.theme.ACPrimaryDark
+import com.jrlabs.audiocity.ui.theme.ACTextSecondary
+import com.jrlabs.audiocity.ui.theme.ACTextTertiary
 
 /**
  * Card compacta para mostrar rutas en carruseles horizontales
- * Equivalente a RouteCardCompact en iOS (180px width)
+ * Equivalente a ACCompactRouteCard en iOS (180px width)
+ * Diseño: imagen de cabecera con gradiente + info debajo
  */
 @Composable
 fun RouteCardCompact(
@@ -44,98 +53,134 @@ fun RouteCardCompact(
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
     ) {
         Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(12.dp)
+            modifier = Modifier.fillMaxWidth()
         ) {
-            // Header: Icono de categoría + Badge de dificultad
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+            // Header con imagen o gradiente
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(100.dp)
             ) {
-                // Icono de categoría
-                Box(
-                    modifier = Modifier
-                        .size(32.dp)
-                        .clip(RoundedCornerShape(8.dp))
-                        .background(getCategoryColor(route.neighborhood).copy(alpha = 0.15f)),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Icon(
-                        imageVector = getCategoryIcon(route.neighborhood),
-                        contentDescription = null,
-                        modifier = Modifier.size(18.dp),
-                        tint = getCategoryColor(route.neighborhood)
+                // Imagen de fondo o gradiente por defecto
+                if (route.thumbnailUrl.isNotEmpty()) {
+                    AsyncImage(
+                        model = ImageRequest.Builder(LocalContext.current)
+                            .data(route.thumbnailUrl)
+                            .crossfade(true)
+                            .build(),
+                        contentDescription = route.name,
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .clip(RoundedCornerShape(topStart = 12.dp, topEnd = 12.dp))
                     )
+                    // Gradiente oscuro para legibilidad del badge
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .background(
+                                Brush.verticalGradient(
+                                    colors = listOf(
+                                        Color.Transparent,
+                                        Color.Black.copy(alpha = 0.4f)
+                                    )
+                                )
+                            )
+                    )
+                } else {
+                    // Fondo con gradiente coral (como iOS)
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .clip(RoundedCornerShape(topStart = 12.dp, topEnd = 12.dp))
+                            .background(
+                                Brush.linearGradient(
+                                    colors = listOf(
+                                        ACPrimary.copy(alpha = 0.8f),
+                                        ACPrimaryDark
+                                    )
+                                )
+                            ),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        // Icono decorativo centrado
+                        Icon(
+                            imageVector = Icons.Default.Headphones,
+                            contentDescription = null,
+                            modifier = Modifier.size(40.dp),
+                            tint = Color.White.copy(alpha = 0.3f)
+                        )
+                    }
                 }
 
-                // Badge de dificultad
-                DifficultyBadge(difficulty = route.difficulty)
+                // Badge de paradas (esquina inferior izquierda)
+                Surface(
+                    modifier = Modifier
+                        .align(Alignment.BottomStart)
+                        .padding(8.dp),
+                    shape = RoundedCornerShape(8.dp),
+                    color = Color.Black.copy(alpha = 0.3f)
+                ) {
+                    Row(
+                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(4.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.LocationOn,
+                            contentDescription = null,
+                            modifier = Modifier.size(12.dp),
+                            tint = Color.White
+                        )
+                        Text(
+                            text = "${route.numStops} paradas",
+                            style = MaterialTheme.typography.labelSmall,
+                            color = Color.White,
+                            fontSize = 10.sp
+                        )
+                    }
+                }
             }
 
-            Spacer(modifier = Modifier.height(8.dp))
-
-            // Nombre de la ruta (2 líneas máximo, altura fija)
-            Text(
-                text = route.name,
-                style = MaterialTheme.typography.titleSmall.copy(
-                    fontWeight = FontWeight.SemiBold,
-                    fontSize = 14.sp
-                ),
-                maxLines = 2,
-                overflow = TextOverflow.Ellipsis,
-                modifier = Modifier.height(40.dp)
-            )
-
-            Spacer(modifier = Modifier.height(4.dp))
-
-            // Ubicación
-            Text(
-                text = "${route.city}, ${route.neighborhood}",
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
-            )
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            // Stats: Duración + Número de paradas
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.Start,
-                verticalAlignment = Alignment.CenterVertically
+            // Info debajo de la imagen
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 8.dp, vertical = 8.dp)
             ) {
-                // Duración
-                Icon(
-                    imageVector = Icons.Default.Schedule,
-                    contentDescription = null,
-                    modifier = Modifier.size(14.dp),
-                    tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
-                )
-                Spacer(modifier = Modifier.width(2.dp))
+                // Nombre de la ruta (2 líneas máximo, altura fija)
                 Text(
-                    text = "${route.durationMinutes}m",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
+                    text = route.name,
+                    style = MaterialTheme.typography.titleSmall.copy(
+                        fontWeight = FontWeight.SemiBold,
+                        fontSize = 14.sp
+                    ),
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier.height(40.dp)
                 )
 
-                Spacer(modifier = Modifier.width(12.dp))
+                // Ciudad y duración en una fila
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = route.city,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = ACTextSecondary,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        modifier = Modifier.weight(1f)
+                    )
 
-                // Número de paradas
-                Icon(
-                    imageVector = Icons.Default.Place,
-                    contentDescription = null,
-                    modifier = Modifier.size(14.dp),
-                    tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
-                )
-                Spacer(modifier = Modifier.width(2.dp))
-                Text(
-                    text = "${route.numStops}",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
-                )
+                    Text(
+                        text = "${route.durationMinutes} min",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = ACTextTertiary
+                    )
+                }
             }
         }
     }

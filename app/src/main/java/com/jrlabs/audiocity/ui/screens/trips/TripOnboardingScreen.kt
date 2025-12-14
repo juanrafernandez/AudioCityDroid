@@ -26,7 +26,8 @@ import androidx.compose.ui.unit.dp
 import com.jrlabs.audiocity.data.model.Destination
 import com.jrlabs.audiocity.data.model.Route
 import com.jrlabs.audiocity.ui.components.DifficultyBadge
-import com.jrlabs.audiocity.ui.components.PurpleColor
+import com.jrlabs.audiocity.ui.theme.ACPrimary
+import com.jrlabs.audiocity.ui.theme.ACSecondary
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -115,8 +116,8 @@ fun TripOnboardingScreen(
                                     .height(8.dp)
                                     .clip(RoundedCornerShape(4.dp))
                                     .background(
-                                        if (index <= currentStep) PurpleColor
-                                        else PurpleColor.copy(alpha = 0.3f)
+                                        if (index <= currentStep) ACPrimary
+                                        else ACPrimary.copy(alpha = 0.3f)
                                     )
                             )
                         }
@@ -139,7 +140,7 @@ fun TripOnboardingScreen(
                             }
                         },
                         enabled = canProceed,
-                        colors = ButtonDefaults.buttonColors(containerColor = PurpleColor)
+                        colors = ButtonDefaults.buttonColors(containerColor = ACPrimary)
                     ) {
                         Text(if (currentStep < 3) "Siguiente" else "Crear Viaje")
                         if (currentStep < 3) {
@@ -318,10 +319,10 @@ fun DestinationCard(
             .clickable { onClick() },
         shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(
-            containerColor = if (isSelected) PurpleColor.copy(alpha = 0.1f)
+            containerColor = if (isSelected) ACPrimary.copy(alpha = 0.1f)
                             else MaterialTheme.colorScheme.surface
         ),
-        border = if (isSelected) androidx.compose.foundation.BorderStroke(2.dp, PurpleColor) else null
+        border = if (isSelected) androidx.compose.foundation.BorderStroke(2.dp, ACPrimary) else null
     ) {
         Row(
             modifier = Modifier
@@ -335,13 +336,13 @@ fun DestinationCard(
                     modifier = Modifier
                         .size(44.dp)
                         .clip(CircleShape)
-                        .background(PurpleColor.copy(alpha = 0.15f)),
+                        .background(ACPrimary.copy(alpha = 0.15f)),
                     contentAlignment = Alignment.Center
                 ) {
                     Icon(
                         imageVector = Icons.Default.Place,
                         contentDescription = null,
-                        tint = PurpleColor
+                        tint = ACPrimary
                     )
                 }
                 Spacer(modifier = Modifier.width(12.dp))
@@ -364,7 +365,7 @@ fun DestinationCard(
                     modifier = Modifier
                         .size(24.dp)
                         .clip(CircleShape)
-                        .background(PurpleColor),
+                        .background(ACPrimary),
                     contentAlignment = Alignment.Center
                 ) {
                     Icon(
@@ -462,7 +463,7 @@ fun RouteSelectionCard(
             Icon(
                 imageVector = if (isSelected) Icons.Default.CheckCircle else Icons.Default.RadioButtonUnchecked,
                 contentDescription = null,
-                tint = if (isSelected) PurpleColor else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f),
+                tint = if (isSelected) ACPrimary else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f),
                 modifier = Modifier.size(24.dp)
             )
 
@@ -533,7 +534,7 @@ fun OptionsStep(
                             Icon(
                                 imageVector = Icons.Default.CalendarMonth,
                                 contentDescription = null,
-                                tint = PurpleColor
+                                tint = ACPrimary
                             )
                             Spacer(modifier = Modifier.width(12.dp))
                             Column {
@@ -596,7 +597,7 @@ fun OptionsStep(
                         Icon(
                             imageVector = Icons.Default.CloudDownload,
                             contentDescription = null,
-                            tint = PurpleColor
+                            tint = ACPrimary
                         )
                         Spacer(modifier = Modifier.width(12.dp))
                         Column {
@@ -723,7 +724,7 @@ fun SummaryStep(
                     modifier = Modifier.fillMaxWidth(),
                     contentAlignment = Alignment.Center
                 ) {
-                    CircularProgressIndicator(color = PurpleColor)
+                    CircularProgressIndicator(color = ACPrimary)
                 }
             }
         }
@@ -749,7 +750,7 @@ fun SummaryCard(
             Icon(
                 imageVector = icon,
                 contentDescription = null,
-                tint = PurpleColor
+                tint = ACPrimary
             )
             Spacer(modifier = Modifier.width(12.dp))
             Column {

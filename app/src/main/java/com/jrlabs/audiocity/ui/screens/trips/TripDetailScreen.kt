@@ -20,9 +20,9 @@ import androidx.compose.ui.unit.dp
 import com.jrlabs.audiocity.data.model.Route
 import com.jrlabs.audiocity.data.model.Trip
 import com.jrlabs.audiocity.ui.components.DifficultyBadge
-import com.jrlabs.audiocity.ui.components.GreenColor
-import com.jrlabs.audiocity.ui.components.PurpleColor
 import com.jrlabs.audiocity.ui.components.TripStatusBadge
+import com.jrlabs.audiocity.ui.theme.ACSecondary
+import com.jrlabs.audiocity.ui.theme.ACSuccess
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -119,14 +119,14 @@ fun TripDetailScreen(
                                     modifier = Modifier
                                         .size(48.dp)
                                         .clip(CircleShape)
-                                        .background(PurpleColor.copy(alpha = 0.15f)),
+                                        .background(ACSecondary.copy(alpha = 0.15f)),
                                     contentAlignment = Alignment.Center
                                 ) {
                                     Icon(
                                         imageVector = Icons.Default.Luggage,
                                         contentDescription = null,
                                         modifier = Modifier.size(24.dp),
-                                        tint = PurpleColor
+                                        tint = ACSecondary
                                     )
                                 }
                                 Spacer(modifier = Modifier.width(12.dp))
@@ -189,13 +189,13 @@ fun TripDetailScreen(
                                     imageVector = Icons.Default.CloudDone,
                                     contentDescription = null,
                                     modifier = Modifier.size(20.dp),
-                                    tint = GreenColor
+                                    tint = ACSuccess
                                 )
                                 Spacer(modifier = Modifier.width(8.dp))
                                 Text(
                                     text = "Disponible offline",
                                     style = MaterialTheme.typography.bodyMedium,
-                                    color = GreenColor
+                                    color = ACSuccess
                                 )
                             }
                         }
@@ -258,7 +258,7 @@ fun TripDetailScreen(
                             Spacer(modifier = Modifier.height(8.dp))
                             Button(
                                 onClick = onAddRoutes,
-                                colors = ButtonDefaults.buttonColors(containerColor = PurpleColor)
+                                colors = ButtonDefaults.buttonColors(containerColor = ACSecondary)
                             ) {
                                 Text("Añadir rutas")
                             }
@@ -350,7 +350,7 @@ fun TripRouteCard(
 
             Button(
                 onClick = onStartClick,
-                colors = ButtonDefaults.buttonColors(containerColor = PurpleColor),
+                colors = ButtonDefaults.buttonColors(containerColor = ACSecondary),
                 contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp)
             ) {
                 Icon(

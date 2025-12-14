@@ -5,8 +5,10 @@
     <string name="google_maps_api_key">AIzaSyCbVzD0lqiMMsZVvv6hM0WyI4kpHJpUrWg</string>
 
     <!-- Tab names -->
-    <string name="tab_explore">Explorar</string>
     <string name="tab_routes">Rutas</string>
+    <string name="tab_explore">Explorar</string>
+    <string name="tab_create">Crear</string>
+    <string name="tab_history">Historial</string>
     <string name="tab_profile">Perfil</string>
 
     <!-- General -->

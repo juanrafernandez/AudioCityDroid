@@ -137,4 +137,22 @@ class LocationService @Inject constructor(
         Location.distanceBetween(lat1, lon1, lat2, lon2, results)
         return results[0]
     }
+
+    /**
+     * Request a single location update for sorting purposes
+     * Updates _currentLocation with the last known location
+     */
+    fun requestSingleLocation() {
+        if (!hasLocationPermission()) return
+
+        try {
+            fusedLocationClient.lastLocation.addOnSuccessListener { location ->
+                if (location != null) {
+                    _currentLocation.value = location
+                }
+            }
+        } catch (e: SecurityException) {
+            e.printStackTrace()
+        }
+    }
 }

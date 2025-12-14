@@ -38,6 +38,9 @@ accompanistPermissions = "0.36.0"
 # Serialization
 kotlinxSerializationJson = "1.7.3"
 
+# Coil (Image loading)
+coil = "2.5.0"
+
 # KSP
 ksp = "2.0.21-1.0.28"
 
@@ -87,6 +90,9 @@ accompanist-permissions = { group = "com.google.accompanist", name = "accompanis
 
 # Serialization
 kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlinxSerializationJson" }
+
+# Coil (Image loading for Compose)
+coil-compose = { group = "io.coil-kt", name = "coil-compose", version.ref = "coil" }
 
 # Material Icons Extended
 androidx-compose-material-icons-extended = { group = "androidx.compose.material", name = "material-icons-extended" }
